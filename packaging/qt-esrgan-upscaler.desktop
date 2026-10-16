@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=ESRGAN Batch Upscaler
+GenericName=Image Upscaler
+Comment=Upscale every image in a folder with Real-ESRGAN (ncnn/Vulkan)
+Exec=esrgan-upscaler
+Icon=qt-esrgan-upscaler
+Terminal=false
+Categories=Graphics;2DGraphics;RasterGraphics;Qt;KDE;
+Keywords=upscale;upscaler;super-resolution;Real-ESRGAN;image;batch;
+StartupNotify=true
+StartupWMClass=esrgan-upscaler
