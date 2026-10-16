@@ -30,7 +30,8 @@ formats by hand.
   from an x4 network.
 - **Idempotent batches** - a journal in the result folder remembers what has
   already been processed, so pressing *Upscale* twice does not redo finished
-  work.
+  work. A result removed by hand, a source file edited after processing, or a
+  different scale or format, all bring the file back into the batch.
 - **EXIF orientation is preserved** - JPEGs shot in portrait do not come out
   sideways.
 - **Progress and log view** - per-file percentage taken from the tool's own
