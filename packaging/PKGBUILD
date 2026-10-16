@@ -6,11 +6,14 @@ pkgdesc="Native Qt 6 front-end for batch image upscaling with Real-ESRGAN (ncnn/
 arch=('any')
 url="https://github.com/SKBlacksmith/qt-esrgan-upscaler"
 license=('MIT')
-# realesrgan-ncnn-vulkan is provided by the AUR package of the same name (or
-# realesrgan-ncnn-vulkan-bin). Install one of them together with this package.
+# The upscaler itself comes from the AUR: realesrgan-ncnn-vulkan-bin provides
+# realesrgan-ncnn-vulkan. The repository is private, so the source archive is
+# produced locally by make-source.sh instead of being downloaded from GitHub.
 depends=('python' 'pyside6' 'python-pillow' 'realesrgan-ncnn-vulkan')
 makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
-source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz")
+# The archive is rebuilt from this repository on every update; run `makepkg -g`
+# if you prefer pinned checksums over SKIP.
 sha256sums=('SKIP')
 
 build() {

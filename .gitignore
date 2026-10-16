@@ -6,3 +6,8 @@ dist/
 .venv/
 .pytest_cache/
 *.desktop.bak
+# makepkg artefacts live next to the PKGBUILD
+packaging/*.tar.gz
+packaging/pkg/
+packaging/src/
+packaging/*.pkg.tar.*
