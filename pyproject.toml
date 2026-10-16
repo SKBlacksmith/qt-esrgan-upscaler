@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "esrgan-upscaler"
+version = "0.1.0"
+description = "Native Qt 6 front-end for batch image upscaling with Real-ESRGAN (ncnn/Vulkan)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = ["PySide6>=6.6", "Pillow>=10"]
+
+[project.gui-scripts]
+esrgan-upscaler = "esrgan_upscaler.gui:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
