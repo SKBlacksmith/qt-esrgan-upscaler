@@ -361,9 +361,10 @@ class MainWindow(QMainWindow):
 def main(argv: Optional[list[str]] = None) -> int:
     application = QApplication(argv if argv is not None else sys.argv)
     application.setApplicationName(APP_NAME)
-    application.setApplicationDisplayName(APP_NAME)
     application.setOrganizationName(ORG_NAME)
     application.setDesktopFileName(APP_KEY)
+    # No applicationDisplayName: KDE appends it to the window title, which
+    # already carries the application name and would then appear twice.
     window = MainWindow()
     window.show()
     return application.exec()
