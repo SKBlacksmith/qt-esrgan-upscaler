@@ -33,6 +33,26 @@ are human. Where a jurisdiction asks an applicant to disclose AI-generated
 material and describe the human contribution, this file is the record of that
 contribution.
 
+## Provenance
+
+Commits and annotated tags from version 0.2.1 onwards are signed with an SSH
+key. The signature shows that the commit came from the holder of that key and
+was not altered afterwards; it says nothing about copyright, and it needs no
+registry, no authority and no third party.
+
+- Signing key fingerprint:
+  `SHA256:34LNi3Fmj8Hlc0SJjzUp3sdrUzIvzko2ySeDiemQ4tk`
+- Public key: [`keys/miss-v-signing.pub`](keys/miss-v-signing.pub)
+- Verifier list: [`keys/allowed_signers`](keys/allowed_signers)
+
+Verification:
+
+```bash
+git config gpg.ssh.allowedSignersFile keys/allowed_signers
+git verify-tag v0.2.1
+git log --show-signature -1
+```
+
 ## Contributions
 
 The project is published to be used and forked, not to be developed in

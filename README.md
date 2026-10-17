@@ -119,6 +119,29 @@ automatically closed without being merged. Fork the repository and carry your
 changes in your own copy. See [CONTRIBUTING.md](CONTRIBUTING.md). Issues are
 open for bug reports, without a promise of a fix or a timeline.
 
+## Provenance
+
+Releases are signed. Commits and annotated tags made from 0.2.1 onwards carry an
+SSH signature from the project signing key:
+
+```
+SHA256:34LNi3Fmj8Hlc0SJjzUp3sdrUzIvzko2ySeDiemQ4tk
+```
+
+The public key and an `allowed_signers` file are committed under `keys/`, so a
+clone can verify history without trusting GitHub:
+
+```bash
+git config gpg.ssh.allowedSignersFile keys/allowed_signers
+git verify-tag v0.2.1
+git log --show-signature -1
+```
+
+A signature proves that a given commit or tag was produced by the holder of that
+key and has not been altered since. It is not a copyright registration, it does
+not require any authority, and it does not depend on this repository staying
+online.
+
 ## License
 
 Copyright (C) 2026 Sergey Kuznetsov (SKBlacksmith / CrossNetwork).

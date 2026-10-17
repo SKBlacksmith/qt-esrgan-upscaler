@@ -1,6 +1,6 @@
 # Maintainer: Sergey Kuznetsov (SKBlacksmith / CrossNetwork) - https://github.com/SKBlacksmith
 pkgname=qt-esrgan-upscaler
-pkgver=0.2.0
+pkgver=0.2.1
 pkgrel=1
 pkgdesc="Native Qt 6 front-end for batch image upscaling with Real-ESRGAN (ncnn/Vulkan)"
 arch=('any')
