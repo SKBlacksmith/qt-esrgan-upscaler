@@ -1,14 +1,14 @@
 # Maintainer: SKBlacksmith (CrossNetwork)
 pkgname=qt-esrgan-upscaler
-pkgver=0.1.1
+pkgver=0.2.0
 pkgrel=1
 pkgdesc="Native Qt 6 front-end for batch image upscaling with Real-ESRGAN (ncnn/Vulkan)"
 arch=('any')
 url="https://github.com/SKBlacksmith/qt-esrgan-upscaler"
 license=('GPL-3.0-or-later')
 # The upscaler itself comes from the AUR: realesrgan-ncnn-vulkan-bin provides
-# realesrgan-ncnn-vulkan. The repository is private, so the source archive is
-# produced locally by make-source.sh instead of being downloaded from GitHub.
+# realesrgan-ncnn-vulkan. The public source archive is generated locally from
+# the tagged checkout by make-source.sh; fetching the repository needs no key.
 depends=('python' 'pyside6' 'python-pillow' 'realesrgan-ncnn-vulkan')
 makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
 source=("$pkgname-$pkgver.tar.gz")

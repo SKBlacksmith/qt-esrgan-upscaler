@@ -3,10 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Build the source archive the PKGBUILD consumes from this git repository.
 #
-# The GitHub repository is private, so makepkg cannot download the release
-# tarball anonymously. This script produces the same layout from the local
-# checkout: qt-esrgan-upscaler-<version>.tar.gz with a single top-level
-# directory, which is exactly what the PKGBUILD expects.
+# The repository is public and can be fetched anonymously over HTTPS. This
+# script archives the selected git tag from the local checkout into the exact
+# single-root layout expected by the PKGBUILD; it needs no network credentials.
 #
 # Usage:  ./packaging/make-source.sh [tag]
 #         (no argument: the tag v<version from PKGBUILD>, falling back to HEAD)

@@ -1,10 +1,22 @@
 # Building the Arch package
 
-The package is not published on the AUR: the repository it is built from is
-private, so `makepkg` cannot download the release tarball anonymously. Instead
-the source archive is generated from the local git checkout.
+The package is not published on the AUR. The source repository is public and
+can be fetched anonymously over HTTPS; no SSH key or token is needed to pull
+updates. The package source archive is generated locally from the selected git
+tag so the build uses the exact source revision.
 
 ## Build and install
+
+Existing clones created while the repository was private may still embed an
+access token in `origin`. Migrate once to anonymous HTTPS fetches (pushes remain
+authenticated):
+
+```bash
+git remote set-url origin https://github.com/SKBlacksmith/qt-esrgan-upscaler.git
+git remote set-url --push origin git@github.com:SKBlacksmith/qt-esrgan-upscaler.git
+```
+
+Then build and install:
 
 ```bash
 # 1. update the working copy
