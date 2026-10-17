@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Drive a batch through the real Qt runner without a display.
 
 This is the smoke test for the runtime path (QProcess, journal, post

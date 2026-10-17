@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Build the source archive the PKGBUILD consumes from this git repository.
 #
 # The GitHub repository is private, so makepkg cannot download the release

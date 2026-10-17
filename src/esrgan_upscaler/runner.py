@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Qt-side execution of the upscaling queue.
 
 One file at a time is handed to ``realesrgan-ncnn-vulkan`` through a

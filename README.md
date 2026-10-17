@@ -86,6 +86,43 @@ Run the tests:
 python -m pytest tests/ -q
 ```
 
+## Maintainer
+
+**SKBlacksmith** (CrossNetwork) - [github.com/SKBlacksmith](https://github.com/SKBlacksmith).
+This repository is the canonical upstream, and write access to it belongs to
+the maintainer alone.
+
+## Authorship: written and reviewed by LLMs
+
+Every line of code in this repository - the application, the tests, the
+packaging and the tooling - is written and reviewed by large language models.
+No human writes or reviews source code here. A human maintainer states the
+requirements, runs the builds, exercises the result on real hardware and
+decides what is accepted; the code itself is machine-authored end to end.
+
+## Contributions
+
+The project is published to be used and forked, not to be developed in
+collaboration: third-party pull requests are closed without being merged.
+Fork the repository and carry your changes in your own copy. Issues are open
+for bug reports, without a promise of a fix or a timeline.
+
 ## License
 
-MIT
+Copyright (C) 2026 SKBlacksmith (CrossNetwork).
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but **without
+any warranty**; without even the implied warranty of merchantability or fitness
+for a particular purpose. See the GNU General Public License for more details.
+
+The full text is in [LICENSE](LICENSE); the SPDX identifier is
+`GPL-3.0-or-later`. Every source file carries an SPDX header.
+
+Note that this covers this application only. `realesrgan-ncnn-vulkan` is a
+separate program (BSD-3-Clause) invoked as a subprocess, and PySide6/Qt is used
+under its own LGPLv3/GPLv3 terms.

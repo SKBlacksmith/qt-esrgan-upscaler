@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Pixel-level helpers around the upscaler (Pillow based).
 
 Real-ESRGAN works on raw pixels: it neither reads EXIF orientation nor writes

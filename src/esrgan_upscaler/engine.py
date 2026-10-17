@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Pure-Python core of the batch upscaler.
 
 Nothing in this module imports Qt: the scale strategy, file discovery,

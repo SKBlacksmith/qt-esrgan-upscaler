@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Native Qt 6 front-end for batch image upscaling with Real-ESRGAN."""
 
 __version__ = "0.1.1"

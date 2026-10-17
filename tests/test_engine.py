@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Behaviour tests for the pure-Python upscaling core.
 
 The core has no Qt imports on purpose: it can be tested on any machine with

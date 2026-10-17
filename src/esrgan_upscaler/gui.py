@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Qt 6 Widgets interface: an Upscale tab and a Settings tab.
 
 Qt Widgets is used deliberately: on KDE Plasma the platform theme applies the
