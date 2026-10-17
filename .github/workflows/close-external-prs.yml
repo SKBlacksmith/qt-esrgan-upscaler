@@ -1,0 +1,63 @@
+name: Close external pull requests
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  close:
+    if: github.event.pull_request.user.login != github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain policy and close the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          API_URL: ${{ github.api_url }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as event_file:
+              event = json.load(event_file)
+          number = event["pull_request"]["number"]
+          api = os.environ["API_URL"]
+          repo = os.environ["REPOSITORY"]
+          headers = {
+              "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+
+          comment = {
+              "body": (
+                  "Thanks for the contribution. This project accepts forks but "
+                  "does not accept upstream pull requests. Please keep your "
+                  "changes in your fork. This pull request is being closed."
+              )
+          }
+          request = urllib.request.Request(
+              f"{api}/repos/{repo}/issues/{number}/comments",
+              data=json.dumps(comment).encode(),
+              headers=headers,
+              method="POST",
+          )
+          with urllib.request.urlopen(request) as response:
+              print(f"Comment posted: HTTP {response.status}")
+
+          close = {"state": "closed"}
+          request = urllib.request.Request(
+              f"{api}/repos/{repo}/pulls/{number}",
+              data=json.dumps(close).encode(),
+              headers=headers,
+              method="PATCH",
+          )
+          with urllib.request.urlopen(request) as response:
+              print(f"Pull request closed: HTTP {response.status}")
+          PY

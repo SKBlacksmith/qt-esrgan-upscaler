@@ -103,9 +103,10 @@ decides what is accepted; the code itself is machine-authored end to end.
 ## Contributions
 
 The project is published to be used and forked, not to be developed in
-collaboration: third-party pull requests are closed without being merged.
-Fork the repository and carry your changes in your own copy. Issues are open
-for bug reports, without a promise of a fix or a timeline.
+collaboration: pull requests from anyone other than the maintainer are
+automatically closed without being merged. Fork the repository and carry your
+changes in your own copy. See [CONTRIBUTING.md](CONTRIBUTING.md). Issues are
+open for bug reports, without a promise of a fix or a timeline.
 
 ## License
 
