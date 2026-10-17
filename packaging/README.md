@@ -51,7 +51,8 @@ sudo pacman -U qt-esrgan-upscaler-*.pkg.tar.zst
 | `/usr/bin/esrgan-upscaler` | entry point created from the wheel |
 | `/usr/lib/python3.*/site-packages/esrgan_upscaler/` | the application |
 | `/usr/share/applications/qt-esrgan-upscaler.desktop` | menu entry |
-| `/usr/share/icons/hicolor/scalable/apps/qt-esrgan-upscaler.svg` | icon |
+| `/usr/share/icons/hicolor/scalable/apps/qt-esrgan-upscaler.svg` | icon (vector) |
+| `/usr/share/icons/hicolor/{16,22,24,32,48,64,128,256,512}x…/apps/qt-esrgan-upscaler.png` | icon (raster sizes) |
 | `/usr/share/licenses/qt-esrgan-upscaler/LICENSE` | licence |
 
 The application only writes to the user's `~/.config/qt-esrgan-upscaler/`

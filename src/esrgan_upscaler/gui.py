@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Optional
 
 from PySide6.QtCore import QSettings, Qt
-from PySide6.QtGui import QAction, QCloseEvent
+from PySide6.QtGui import QAction, QCloseEvent, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -361,11 +361,25 @@ class MainWindow(QMainWindow):
         event.accept()
 
 
+def _application_icon() -> QIcon:
+    """Theme icon when installed; the source-tree SVG for development runs."""
+    icon = QIcon.fromTheme(APP_KEY)
+    if not icon.isNull():
+        return icon
+    here = Path(__file__).resolve()
+    for candidate in (here.parent / f"{APP_KEY}.svg",
+                      here.parents[2] / "packaging" / f"{APP_KEY}.svg"):
+        if candidate.is_file():
+            return QIcon(str(candidate))
+    return QIcon()
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     application = QApplication(argv if argv is not None else sys.argv)
     application.setApplicationName(APP_NAME)
     application.setOrganizationName(ORG_NAME)
     application.setDesktopFileName(APP_KEY)
+    application.setWindowIcon(_application_icon())
     # No applicationDisplayName: KDE appends it to the window title, which
     # already carries the application name and would then appear twice.
     window = MainWindow()

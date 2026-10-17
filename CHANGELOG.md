@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+- New monochrome application icon: three nested windows, the inner ones anchored
+  to the bottom-right corner (1:2:4). Ships as SVG plus PNG at 16-512 px; the
+  16-24 px renditions are simplified to two levels so they stay legible.
+- The window icon comes from the icon theme when installed, with a source-tree
+  fallback for development runs.
+
 ## 0.2.1
 
 - Commits and annotated tags are signed with an SSH key; the public key and an

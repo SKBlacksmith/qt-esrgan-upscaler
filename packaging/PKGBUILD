@@ -1,6 +1,6 @@
 # Maintainer: Sergey Kuznetsov (SKBlacksmith / CrossNetwork) - https://github.com/SKBlacksmith
 pkgname=qt-esrgan-upscaler
-pkgver=0.2.1
+pkgver=0.2.2
 pkgrel=1
 pkgdesc="Native Qt 6 front-end for batch image upscaling with Real-ESRGAN (ncnn/Vulkan)"
 arch=('any')
@@ -28,5 +28,9 @@ package() {
     "$pkgdir/usr/share/applications/qt-esrgan-upscaler.desktop"
   install -Dm644 packaging/qt-esrgan-upscaler.svg \
     "$pkgdir/usr/share/icons/hicolor/scalable/apps/qt-esrgan-upscaler.svg"
+  for size in 16 22 24 32 48 64 128 256 512; do
+    install -Dm644 "packaging/icons/hicolor/${size}x${size}/apps/qt-esrgan-upscaler.png" \
+      "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/qt-esrgan-upscaler.png"
+  done
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

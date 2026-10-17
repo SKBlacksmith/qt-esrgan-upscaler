@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "esrgan-upscaler"
-version = "0.2.1"
+version = "0.2.2"
 description = "Native Qt 6 front-end for batch image upscaling with Real-ESRGAN (ncnn/Vulkan)"
 readme = "README.md"
 requires-python = ">=3.11"
