@@ -1,4 +1,6 @@
-# qt-esrgan-upscaler
+# ESRGAN Batch Upscaler
+
+*Repository name: `qt-esrgan-upscaler`.*
 
 A native Qt 6 / KDE desktop front-end for batch image upscaling with
 [Real-ESRGAN ncnn Vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan).
@@ -88,17 +90,26 @@ python -m pytest tests/ -q
 
 ## Maintainer
 
-**SKBlacksmith** (CrossNetwork) - [github.com/SKBlacksmith](https://github.com/SKBlacksmith).
+**Sergey Kuznetsov** (SKBlacksmith) - [github.com/SKBlacksmith](https://github.com/SKBlacksmith).
 This repository is the canonical upstream, and write access to it belongs to
 the maintainer alone.
+
+*CrossNetwork* is the name the author uses for his own projects and websites.
+It is not a company and not a registered trademark.
 
 ## Authorship: written and reviewed by LLMs
 
 Every line of code in this repository - the application, the tests, the
 packaging and the tooling - is written and reviewed by large language models.
-No human writes or reviews source code here. A human maintainer states the
-requirements, runs the builds, exercises the result on real hardware and
-decides what is accepted; the code itself is machine-authored end to end.
+No human writes or reviews source code here.
+
+What the human author does is the part that directs the work: he states the
+requirements and the scope, makes the architectural and design decisions,
+chooses between competing implementations and rejects the ones that do not fit,
+sets the acceptance criteria, verifies each release on real hardware, and
+curates what enters this repository and what does not. The code is
+machine-authored; the selection, arrangement and acceptance of it are human.
+See [AUTHORS.md](AUTHORS.md).
 
 ## Contributions
 
@@ -110,7 +121,7 @@ open for bug reports, without a promise of a fix or a timeline.
 
 ## License
 
-Copyright (C) 2026 SKBlacksmith (CrossNetwork).
+Copyright (C) 2026 Sergey Kuznetsov (SKBlacksmith / CrossNetwork).
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-FileCopyrightText: 2026 Sergey Kuznetsov (SKBlacksmith)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """Qt 6 Widgets interface: an Upscale tab and a Settings tab.

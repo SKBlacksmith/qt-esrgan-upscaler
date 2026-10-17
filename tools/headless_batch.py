@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 SKBlacksmith (CrossNetwork)
+# SPDX-FileCopyrightText: 2026 Sergey Kuznetsov (SKBlacksmith)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """Drive a batch through the real Qt runner without a display.
