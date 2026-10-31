@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.5
+
+- JPEG output goes through the same path as WebP: the upscaler writes a
+  lossless PNG and the application encodes the final JPEG at quality 95 with
+  4:4:4 chroma. Before this, a JPEG written at the model's native x4 carried
+  the upscaler's own quality while the "quality 95" label suggested otherwise.
+- With that, every label in the format selector states what actually happens.
+
 ## 0.2.4
 
 - WebP output is now encoded once, at a quality you choose: `Lossless`
