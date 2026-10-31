@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.3
+
+- New models in the selector: `realesr-general-x4v3` and its denoise-tuned
+  sibling `realesr-general-wdn-x4v3`. Both are native x4 SRVGGNetCompact
+  networks aimed at ordinary photographs rather than anime, and both are
+  lighter on VRAM and time than `realesrgan-x4plus`.
+- The ncnn binary takes no `-dn` flag, so denoise strength is a model choice,
+  not a number; the selector exposes the wdn variant for that reason.
+- The `.bin`/`.param` pairs are not in the official 0.2.5.0 archive and are
+  installed into the shared model folder separately.
+
 ## 0.2.2
 
 - New monochrome application icon: three nested windows, the inner ones anchored

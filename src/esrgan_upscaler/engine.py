@@ -22,8 +22,10 @@ DEFAULT_BINARY = "realesrgan-ncnn-vulkan"
 DEFAULT_MODEL_DIR = "/usr/share/realesrgan-ncnn-vulkan/models"
 DEFAULT_MODEL = "realesrgan-x4plus"
 
-#: Models shipped with realesrgan-ncnn-vulkan 0.2.5.0 and the scale each one
-#: is trained for. A model is *native* at exactly this factor.
+#: Models this front-end can drive, and the scale each one is trained for. A
+#: model is *native* at exactly this factor. The first six ship with the
+#: realesrgan-ncnn-vulkan 0.2.5.0 archive; the two general models are separate
+#: ncnn conversions installed into the same model folder by hand.
 MODEL_NATIVE_SCALE = {
     "realesrgan-x4plus": 4,
     "realesrgan-x4plus-anime": 4,
@@ -31,6 +33,11 @@ MODEL_NATIVE_SCALE = {
     "realesr-animevideov3-x2": 2,
     "realesr-animevideov3-x3": 3,
     "realesr-animevideov3-x4": 4,
+    # Lightweight SRVGGNetCompact models for general photographs; the "wdn"
+    # weights are the denoise-tuned variant (ncnn exposes no -dn flag, so the
+    # denoise strength is a choice of model, not a numeric setting).
+    "realesr-general-x4v3": 4,
+    "realesr-general-wdn-x4v3": 4,
 }
 
 INPUT_EXTENSIONS = (".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff")

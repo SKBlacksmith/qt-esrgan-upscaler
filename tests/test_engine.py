@@ -22,6 +22,19 @@ def test_x4plus_is_a_native_x4_model():
     assert engine.native_scale("realesrgan-x4plus") == 4
 
 
+def test_general_models_are_known_x4_models():
+    assert engine.native_scale("realesr-general-x4v3") == 4
+    assert engine.native_scale("realesr-general-wdn-x4v3") == 4
+
+
+def test_x2_on_a_general_model_runs_x4_then_downscales():
+    for model in ("realesr-general-x4v3", "realesr-general-wdn-x4v3"):
+        strategy = engine.plan_strategy(model, 2)
+        assert strategy.run_scale == 4
+        assert strategy.downscale_to == 2
+        assert strategy.native is False
+
+
 def test_unknown_model_has_no_native_scale():
     assert engine.native_scale("nope-not-a-model") is None
 
