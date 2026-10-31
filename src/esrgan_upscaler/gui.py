@@ -44,9 +44,18 @@ APP_KEY = "qt-esrgan-upscaler"
 
 FORMAT_CHOICES = [
     ("Keep source format", ""),
-    ("PNG (lossless)", "png"),
-    ("JPEG (smaller files)", "jpg"),
-    ("WebP (lossless, compact)", "webp"),
+    ("PNG (lossless, large)", "png"),
+    ("JPEG (lossy, quality 95)", "jpg"),
+    ("WebP (see the quality setting)", "webp"),
+]
+
+#: WebP encoding profiles. Quality is a choice of profile, not a number: the
+#: lossless one is smaller than PNG on scans and loses nothing at all.
+WEBP_QUALITY_CHOICES = [
+    ("Lossless (recommended for archive)", "lossless"),
+    ("High, q95", "high"),
+    ("Balanced, q90", "balanced"),
+    ("Small, q80", "small"),
 ]
 
 
@@ -174,9 +183,18 @@ class MainWindow(QMainWindow):
         for label, value in FORMAT_CHOICES:
             self.format_combo.addItem(label, value)
         self.format_combo.currentIndexChanged.connect(self._refresh_summary)
+        self.format_combo.currentIndexChanged.connect(self._update_format_dependents)
+        self.webp_quality_combo = QComboBox(folders_box)
+        for label, value in WEBP_QUALITY_CHOICES:
+            self.webp_quality_combo.addItem(label, value)
+        self.webp_quality_combo.setToolTip(
+            "Encoding profile for WebP output. The upscaler always produces a "
+            "lossless PNG and the result is encoded once, at this quality."
+        )
         folders_form.addRow("Source folder:", self.source_row)
         folders_form.addRow("Result folder:", self.result_row)
         folders_form.addRow("Output format:", self.format_combo)
+        folders_form.addRow("WebP quality:", self.webp_quality_combo)
         layout.addWidget(folders_box)
 
         hint = QLabel(
@@ -228,6 +246,13 @@ class MainWindow(QMainWindow):
         index = self.format_combo.findData(out_format)
         self.format_combo.setCurrentIndex(index if index >= 0 else 0)
 
+        quality = str(store.value("webp_quality", engine.DEFAULT_WEBP_QUALITY))
+        index = self.webp_quality_combo.findData(quality)
+        self.webp_quality_combo.setCurrentIndex(
+            index if index >= 0 else self.webp_quality_combo.findData(engine.DEFAULT_WEBP_QUALITY)
+        )
+        self._update_format_dependents()
+
     def _save_settings(self) -> None:
         store = self._settings()
         store.setValue("binary", self.binary_row.text())
@@ -238,6 +263,7 @@ class MainWindow(QMainWindow):
         store.setValue("source_dir", self.source_row.text())
         store.setValue("result_dir", self.result_row.text())
         store.setValue("out_format", self.format_combo.currentData())
+        store.setValue("webp_quality", self.webp_quality_combo.currentData())
         store.sync()
 
     def collect_settings(self) -> Settings:
@@ -250,6 +276,7 @@ class MainWindow(QMainWindow):
             result_dir=self.result_row.text(),
             out_format=self.format_combo.currentData() or None,
             tile_size=self.tile_spin.value(),
+            webp_quality=self.webp_quality_combo.currentData() or engine.DEFAULT_WEBP_QUALITY,
         )
 
     # -- batch control -------------------------------------------------------
@@ -278,7 +305,13 @@ class MainWindow(QMainWindow):
         pending = [
             job
             for job in jobs
-            if not journal.is_done(job.source, settings.scale, settings.model, settings.out_format)
+            if not journal.is_done(
+                job.source,
+                settings.scale,
+                settings.model,
+                settings.out_format,
+                quality=settings.webp_quality,
+            )
         ]
         skipped = len(jobs) - len(pending)
         if skipped:
@@ -298,13 +331,23 @@ class MainWindow(QMainWindow):
             return f"The upscaler binary was not found: {settings.binary}"
         return None
 
+    def _update_format_dependents(self) -> None:
+        """The WebP quality only matters when WebP is the chosen output."""
+        is_webp = self.format_combo.currentData() == "webp"
+        self.webp_quality_combo.setEnabled(is_webp)
+        self._refresh_summary()
+
     def _refresh_summary(self) -> None:
         source = self.source_row.text() or "(not set)"
         result = self.result_row.text() or "(not set)"
         scale = self.scale_combo.currentData() if hasattr(self, "scale_combo") else 4
-        self.source_summary.setText(
-            f"Source: {source}\nResult: {result}\nUpscale factor: x{scale}"
-        )
+        lines = [f"Source: {source}", f"Result: {result}", f"Upscale factor: x{scale}"]
+        if hasattr(self, "format_combo"):
+            label = self.format_combo.currentText()
+            if self.format_combo.currentData() == "webp" and hasattr(self, "webp_quality_combo"):
+                label = f"{label} — {self.webp_quality_combo.currentText()}"
+            lines.append(f"Output: {label}")
+        self.source_summary.setText("\n".join(lines))
 
     # -- runner wiring -------------------------------------------------------
 

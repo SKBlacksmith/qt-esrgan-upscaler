@@ -32,6 +32,7 @@ class Settings:
     result_dir: str = ""
     out_format: Optional[str] = None  # None keeps the source extension
     tile_size: int = 256  # 0 lets the tool choose
+    webp_quality: str = engine.DEFAULT_WEBP_QUALITY  # profile name, not a number
 
 
 class _PostProcessSignals(QObject):
@@ -39,25 +40,40 @@ class _PostProcessSignals(QObject):
 
 
 class _PostProcessTask(QRunnable):
-    """Downscale and/or fix the orientation of a finished result."""
+    """Downscale, orient and (for WebP) encode a finished result."""
 
-    def __init__(self, index: int, source: Path, target: Path, strategy: engine.Strategy):
+    def __init__(
+        self,
+        index: int,
+        source: Path,
+        target: Path,
+        strategy: engine.Strategy,
+        intermediate: Optional[Path] = None,
+        webp_quality: str = engine.DEFAULT_WEBP_QUALITY,
+    ):
         super().__init__()
         self.index = index
         self.source = source
         self.target = target
         self.strategy = strategy
+        self.intermediate = intermediate
+        self.webp_quality = webp_quality
         self.signals = _PostProcessSignals()
 
     def run(self) -> None:  # pragma: no cover - exercised on the target host
         try:
+            work = self.intermediate or self.target
             if self.strategy.downscale_to is not None:
                 image_ops.downscale(
-                    self.target, self.strategy.downscale_to, self.strategy.run_scale
+                    work, self.strategy.downscale_to, self.strategy.run_scale
                 )
-            rotated = image_ops.apply_orientation(self.source, self.target)
-            note = "orientation applied" if rotated else ""
-            self.signals.finished.emit(self.index, True, note)
+            rotated = image_ops.apply_orientation(self.source, work)
+            notes = ["orientation applied"] if rotated else []
+            if self.intermediate is not None:
+                size = image_ops.encode_webp(work, self.target, self.webp_quality)
+                self.intermediate.unlink(missing_ok=True)
+                notes.append(f"webp {self.webp_quality}, {size / 1e6:.1f} MB")
+            self.signals.finished.emit(self.index, True, "; ".join(notes))
         except Exception as error:  # noqa: BLE001 - reported to the user as text
             self.signals.finished.emit(self.index, False, str(error))
 
@@ -152,14 +168,15 @@ class UpscaleRunner(QObject):
         job = self._jobs[self._index]
         if self._strategy is None:
             return
+        engine_path, engine_format = engine.engine_target(job.target, self._settings.out_format)
         argv = engine.build_command(
             binary=self._settings.binary,
             model_dir=self._settings.model_dir,
             model=self._settings.model,
             run_scale=self._strategy.run_scale,
             source=job.source,
-            target=job.target,
-            out_format=self._settings.out_format,
+            target=engine_path,
+            out_format=engine_format,
             tile_size=self._settings.tile_size or None,
         )
 
@@ -213,7 +230,16 @@ class UpscaleRunner(QObject):
             self._start_next()
             return
 
-        task = _PostProcessTask(self._index, job.source, job.target, self._strategy)
+        engine_path, _ = engine.engine_target(job.target, self._settings.out_format)
+        intermediate = engine_path if engine_path != job.target else None
+        task = _PostProcessTask(
+            self._index,
+            job.source,
+            job.target,
+            self._strategy,
+            intermediate=intermediate,
+            webp_quality=self._settings.webp_quality,
+        )
         task.signals.finished.connect(self._on_post_processed)
         self._pool.start(task)
 
@@ -228,6 +254,7 @@ class UpscaleRunner(QObject):
                     self._settings.model,
                     self._settings.out_format,
                     target=job.target,
+                    quality=self._settings.webp_quality,
                 )
                 self._journal.save()
             detail = f" ({message})" if message else ""

@@ -269,3 +269,42 @@ def test_build_plan_pairs_every_source_with_a_target(tmp_path):
 
     assert [job.target.name for job in plan] == ["a_x4.png", "b_x4.png"]
     assert all(job.target.parent == out_dir for job in plan)
+
+
+# --- WebP encoding ----------------------------------------------------------
+
+
+def test_webp_needs_a_png_intermediate():
+    assert engine.needs_png_intermediate("webp") is True
+    assert engine.needs_png_intermediate("png") is False
+    assert engine.needs_png_intermediate("jpg") is False
+    assert engine.needs_png_intermediate(None) is False
+
+
+def test_engine_target_switches_to_png_for_webp(tmp_path):
+    target = tmp_path / "photo_x2.webp"
+    path, fmt = engine.engine_target(target, "webp")
+    assert path == tmp_path / "photo_x2.webp.engine.png"
+    assert fmt == "png"
+    assert engine.engine_target(target, "jpg") == (target, "jpg")
+
+
+def test_webp_quality_falls_back_to_lossless():
+    assert engine.webp_quality(None) == "lossless"
+    assert engine.webp_quality("") == "lossless"
+    assert engine.webp_quality("HIGH") == "high"
+
+
+def test_webp_quality_rejects_unknown_profiles():
+    with pytest.raises(engine.UnsupportedFormatError):
+        engine.webp_quality("q42")
+
+
+def test_journal_keeps_webp_quality_apart(tmp_path):
+    source = tmp_path / "photo.jpg"
+    source.write_bytes(b"not really a jpeg")
+    journal = engine.Journal(tmp_path / "journal.json")
+    journal.mark_done(source, 2, "realesr-general-x4v3", "webp", quality="lossless")
+
+    assert journal.is_done(source, 2, "realesr-general-x4v3", "webp", quality="lossless") is True
+    assert journal.is_done(source, 2, "realesr-general-x4v3", "webp", quality="small") is False

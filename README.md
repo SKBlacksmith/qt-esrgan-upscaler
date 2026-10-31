@@ -24,8 +24,14 @@ formats by hand.
 - **Batch by folder** - every image in the source folder is processed into the
   result folder; sub-folders and the result folder itself are skipped.
 - **Settings tab** - model folder, model selection, upscale factor (x1-x4),
-  source folder, result folder, output format (keep / PNG / JPEG / WebP) and
-  tile size for GPU memory control.
+  source folder, result folder, output format (keep / PNG / JPEG / WebP),
+  WebP encoding profile (lossless, q95, q90, q80) and tile size for GPU memory
+  control.
+- **One lossy generation at most** - for WebP the upscaler is asked for a
+  lossless PNG and the result is encoded once, by this application, at the
+  quality you chose. The profile is part of the journal key, so switching from
+  lossless to a lossy profile redoes the work instead of silently keeping the
+  old files.
 - **Honest scale factors** - Real-ESRGAN models are native x4. Requesting x2 on
   a photographic model runs the native x4 network and then resizes the output
   down with a Lanczos filter, which is the only correct way to get a real x2

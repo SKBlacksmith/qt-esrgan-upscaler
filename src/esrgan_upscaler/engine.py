@@ -48,6 +48,18 @@ OUTPUT_FORMATS = {"png": "png", "jpg": "jpg", "jpeg": "jpg", "webp": "webp"}
 
 SUPPORTED_SCALES = (1, 2, 3, 4)
 
+#: WebP encoding profiles: the value kept in the settings maps onto the Pillow
+#: quality, and ``None`` means lossless encoding. The upscaler itself writes
+#: WebP with fixed settings, so the final file is always encoded here instead.
+WEBP_QUALITIES = {
+    "lossless": None,
+    "high": 95,
+    "balanced": 90,
+    "small": 80,
+}
+
+DEFAULT_WEBP_QUALITY = "lossless"
+
 #: The tool prints one percentage per line while it works.
 PROGRESS_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 
@@ -128,6 +140,37 @@ def normalise_format(value: Optional[str]) -> Optional[str]:
     if cleaned not in OUTPUT_FORMATS:
         raise UnsupportedFormatError(f"unsupported output format: {value}")
     return OUTPUT_FORMATS[cleaned]
+
+
+def webp_quality(value: Optional[str]) -> str:
+    """Validate a WebP quality profile name, falling back to the default."""
+    cleaned = str(value or "").strip().lower()
+    if not cleaned:
+        return DEFAULT_WEBP_QUALITY
+    if cleaned not in WEBP_QUALITIES:
+        raise UnsupportedFormatError(f"unsupported WebP quality: {value}")
+    return cleaned
+
+
+def needs_png_intermediate(out_format: Optional[str]) -> bool:
+    """True when the final WebP must be encoded from a lossless PNG.
+
+    The tool writes WebP with its own fixed settings, and the post-processing
+    step then re-encoded that file through Pillow's defaults, so every result
+    carried two generations of loss the user could not influence. Asking the
+    tool for PNG and encoding WebP once, at the end, fixes that.
+    """
+    return normalise_format(out_format) == "webp"
+
+
+def engine_target(
+    target: os.PathLike | str,
+    out_format: Optional[str],
+) -> tuple[Path, Optional[str]]:
+    """Path and ``-f`` format the upscaler must write for one result file."""
+    if needs_png_intermediate(out_format):
+        return Path(f"{target}.engine.png"), "png"
+    return Path(target), normalise_format(out_format)
 
 
 def output_name(source_name: str, scale: int, out_format: Optional[str]) -> str:
@@ -266,9 +309,20 @@ class Journal:
     # -- queries -------------------------------------------------------------
 
     @staticmethod
-    def _key(source: os.PathLike | str, scale: int, model: str, out_format: Optional[str]) -> str:
+    def _key(
+        source: os.PathLike | str,
+        scale: int,
+        model: str,
+        out_format: Optional[str],
+        quality: Optional[str] = None,
+    ) -> str:
         fmt = normalise_format(out_format) or "keep"
-        return f"{Path(source).resolve()}|x{scale}|{model}|{fmt}"
+        key = f"{Path(source).resolve()}|x{scale}|{model}|{fmt}"
+        if fmt == "webp":
+            # The encoding profile changes the pixels, so it is part of the
+            # identity of the result: switching lossless -> q95 must redo work.
+            key += f"|q:{webp_quality(quality)}"
+        return key
 
     @staticmethod
     def _fingerprint(source: os.PathLike | str) -> Optional[dict]:
@@ -284,8 +338,9 @@ class Journal:
         scale: int,
         model: str,
         out_format: Optional[str],
+        quality: Optional[str] = None,
     ) -> bool:
-        entry = self._entries.get(self._key(source, scale, model, out_format))
+        entry = self._entries.get(self._key(source, scale, model, out_format, quality))
         if not entry:
             return False
         fingerprint = self._fingerprint(source)
@@ -306,13 +361,14 @@ class Journal:
         model: str,
         out_format: Optional[str],
         target: Optional[os.PathLike | str] = None,
+        quality: Optional[str] = None,
     ) -> None:
         fingerprint = self._fingerprint(source)
         if fingerprint is None:
             return
         entry = dict(fingerprint)
         entry["target"] = str(target) if target is not None else None
-        self._entries[self._key(source, scale, model, out_format)] = entry
+        self._entries[self._key(source, scale, model, out_format, quality)] = entry
 
     def forget_missing(self) -> None:
         """Drop entries whose source file no longer exists."""

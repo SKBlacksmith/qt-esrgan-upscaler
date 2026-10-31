@@ -74,3 +74,43 @@ def test_downscale_keeps_jpegs_as_jpegs(tmp_path):
     with Image.open(path) as image:
         assert image.format == "JPEG"
         assert image.size == (20, 10)
+
+
+def test_encode_webp_lossless_keeps_every_pixel(tmp_path):
+    source = _make(tmp_path / "src.png", size=(16, 8), color=(17, 99, 200))
+    target = tmp_path / "out.webp"
+
+    size = image_ops.encode_webp(source, target, "lossless")
+
+    assert size > 0
+    with Image.open(target) as encoded, Image.open(source) as original:
+        assert encoded.format == "WEBP"
+        assert list(encoded.convert("RGB").getdata()) == list(original.convert("RGB").getdata())
+
+
+def test_encode_webp_lossy_profile_actually_loses_something(tmp_path):
+    # Size ordering is not a property worth asserting on synthetic images —
+    # a flat or tiny picture can compress better lossily than losslessly. What
+    # must hold is that the lossy profile changes pixels and lossless does not.
+    source = tmp_path / "src.png"
+    image = Image.new("RGB", (32, 32))
+    image.putdata([((x * 37) % 256, (x * 91) % 256, (x * 57) % 256) for x in range(32 * 32)])
+    image.save(source)
+    lossless = tmp_path / "lossless.webp"
+    small = tmp_path / "small.webp"
+
+    image_ops.encode_webp(source, lossless, "lossless")
+    image_ops.encode_webp(source, small, "small")
+
+    with Image.open(source) as original:
+        expected = list(original.convert("RGB").getdata())
+    with Image.open(lossless) as encoded:
+        assert list(encoded.convert("RGB").getdata()) == expected
+    with Image.open(small) as encoded:
+        assert list(encoded.convert("RGB").getdata()) != expected
+
+
+def test_encode_webp_rejects_an_unknown_profile(tmp_path):
+    source = _make(tmp_path / "src.png")
+    with pytest.raises(Exception):
+        image_ops.encode_webp(source, tmp_path / "out.webp", "q42")

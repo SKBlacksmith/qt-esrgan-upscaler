@@ -34,6 +34,12 @@ def main() -> int:
     parser.add_argument("--model", default=engine.DEFAULT_MODEL)
     parser.add_argument("--scale", type=int, default=4)
     parser.add_argument("--format", dest="out_format", default=None)
+    parser.add_argument(
+        "--webp-quality",
+        dest="webp_quality",
+        default=engine.DEFAULT_WEBP_QUALITY,
+        help="WebP profile: lossless, high, balanced, small",
+    )
     parser.add_argument("--tile-size", type=int, default=256)
     parser.add_argument("--binary", default=engine.DEFAULT_BINARY)
     parser.add_argument("--model-dir", default=engine.DEFAULT_MODEL_DIR)
@@ -50,6 +56,7 @@ def main() -> int:
         result_dir=args.result,
         out_format=args.out_format,
         tile_size=args.tile_size,
+        webp_quality=args.webp_quality,
     )
 
     jobs = engine.build_plan(args.source, args.result, args.scale, args.model, args.out_format)
@@ -57,7 +64,9 @@ def main() -> int:
     pending = [
         job
         for job in jobs
-        if not journal.is_done(job.source, args.scale, args.model, args.out_format)
+        if not journal.is_done(
+            job.source, args.scale, args.model, args.out_format, quality=args.webp_quality
+        )
     ]
     print(f"planned={len(jobs)} pending={len(pending)}", flush=True)
 

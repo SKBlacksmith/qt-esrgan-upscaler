@@ -16,6 +16,8 @@ from typing import Optional
 
 from PIL import Image, ImageOps
 
+from . import engine
+
 #: EXIF orientation tag numbers mapped onto :meth:`PIL.Image.Image.transpose`.
 ORIENTATION_TRANSPOSE = {
     2: Image.Transpose.FLIP_LEFT_RIGHT,
@@ -99,6 +101,31 @@ def downscale(
     return _rewrite(path, resized, quality=quality)
 
 
+def encode_webp(
+    source: os.PathLike | str,
+    target: os.PathLike | str,
+    quality: str = engine.DEFAULT_WEBP_QUALITY,
+) -> int:
+    """Encode ``source`` into ``target`` as WebP with the given profile.
+
+    The upscaler never writes the final WebP: it produces a lossless PNG and
+    this function encodes it exactly once, so the chosen quality is the only
+    lossy generation a result goes through. Returns the size in bytes.
+    """
+    profile = engine.webp_quality(quality)
+    level = engine.WEBP_QUALITIES[profile]
+    with Image.open(source) as original:
+        original.load()
+        image = original
+        if image.mode not in ("RGB", "RGBA", "L"):
+            image = image.convert("RGB")
+        if level is None:
+            image.save(target, format="WEBP", lossless=True, method=6)
+        else:
+            image.save(target, format="WEBP", quality=int(level), method=4)
+    return os.path.getsize(target)
+
+
 def image_size(path: os.PathLike | str) -> Optional[tuple[int, int]]:
     """Pixel size of an image, or ``None`` when it cannot be read."""
     try:
@@ -123,6 +150,10 @@ def _rewrite(path, transform, quality: int = _JPEG_QUALITY) -> tuple[int, int]:
             save_kwargs = {"quality": quality, "subsampling": 0, "optimize": True}
             if image.mode not in ("RGB", "L"):
                 image = image.convert("RGB")
+        elif save_format == "WEBP":
+            # Never rely on the library default here: it is lossy quality 80,
+            # which silently degraded every rewritten WebP result.
+            save_kwargs = {"lossless": True, "method": 6}
         temporary = target.with_name(target.name + ".tmp")
         image.save(temporary, format=save_format, **save_kwargs)
         size = image.size
