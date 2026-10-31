@@ -126,6 +126,24 @@ def encode_webp(
     return os.path.getsize(target)
 
 
+def encode_jpeg(
+    source: os.PathLike | str,
+    target: os.PathLike | str,
+    quality: int = _JPEG_QUALITY,
+) -> int:
+    """Encode ``source`` into ``target`` as JPEG q95 with 4:4:4 chroma.
+
+    Same reasoning as :func:`encode_webp`: the upscaler's own JPEG settings are
+    not ours to trust, so it produces a lossless PNG and this function writes
+    the final file. Returns the size in bytes.
+    """
+    with Image.open(source) as original:
+        original.load()
+        image = original if original.mode in ("RGB", "L") else original.convert("RGB")
+        image.save(target, format="JPEG", quality=quality, subsampling=0, optimize=True)
+    return os.path.getsize(target)
+
+
 def image_size(path: os.PathLike | str) -> Optional[tuple[int, int]]:
     """Pixel size of an image, or ``None`` when it cannot be read."""
     try:

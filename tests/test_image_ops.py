@@ -114,3 +114,18 @@ def test_encode_webp_rejects_an_unknown_profile(tmp_path):
     source = _make(tmp_path / "src.png")
     with pytest.raises(Exception):
         image_ops.encode_webp(source, tmp_path / "out.webp", "q42")
+
+
+def test_encode_jpeg_writes_a_real_jpeg_at_the_same_size(tmp_path):
+    source = tmp_path / "src.png"
+    image = Image.new("RGB", (40, 20))
+    image.putdata([((x * 13) % 256, (x * 29) % 256, (x * 7) % 256) for x in range(40 * 20)])
+    image.save(source)
+    target = tmp_path / "out.jpg"
+
+    size = image_ops.encode_jpeg(source, target)
+
+    assert size > 0
+    with Image.open(target) as encoded:
+        assert encoded.format == "JPEG"
+        assert encoded.size == (40, 20)

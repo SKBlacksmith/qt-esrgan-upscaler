@@ -60,6 +60,9 @@ WEBP_QUALITIES = {
 
 DEFAULT_WEBP_QUALITY = "lossless"
 
+#: Extensions the application encodes itself, from a lossless intermediate.
+APP_ENCODED_SUFFIXES = (".webp", ".jpg", ".jpeg")
+
 #: The tool prints one percentage per line while it works.
 PROGRESS_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 
@@ -152,15 +155,18 @@ def webp_quality(value: Optional[str]) -> str:
     return cleaned
 
 
-def needs_png_intermediate(out_format: Optional[str]) -> bool:
-    """True when the final WebP must be encoded from a lossless PNG.
+def needs_png_intermediate(target: os.PathLike | str) -> bool:
+    """True when the final file must be encoded from a lossless PNG.
 
-    The tool writes WebP with its own fixed settings, and the post-processing
-    step then re-encoded that file through Pillow's defaults, so every result
-    carried two generations of loss the user could not influence. Asking the
-    tool for PNG and encoding WebP once, at the end, fixes that.
+    The upscaler writes both JPEG and WebP with its own fixed settings, and the
+    post-processing step used to re-encode the result through Pillow's defaults
+    (lossy quality 80 for WebP), so a result could carry two generations of
+    loss that nobody chose. Asking the tool for PNG and encoding the final file
+    once, here, is the only way to know the quality that was actually used.
+    The decision is made on the extension the result will have, so "keep the
+    source format" lands on the same path as an explicit choice.
     """
-    return normalise_format(out_format) == "webp"
+    return Path(target).suffix.lower() in APP_ENCODED_SUFFIXES
 
 
 def engine_target(
@@ -168,9 +174,10 @@ def engine_target(
     out_format: Optional[str],
 ) -> tuple[Path, Optional[str]]:
     """Path and ``-f`` format the upscaler must write for one result file."""
-    if needs_png_intermediate(out_format):
-        return Path(f"{target}.engine.png"), "png"
-    return Path(target), normalise_format(out_format)
+    path = Path(target)
+    if needs_png_intermediate(path):
+        return Path(f"{path}.engine.png"), "png"
+    return path, normalise_format(out_format)
 
 
 def output_name(source_name: str, scale: int, out_format: Optional[str]) -> str:

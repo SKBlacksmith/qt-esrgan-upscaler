@@ -70,9 +70,13 @@ class _PostProcessTask(QRunnable):
             rotated = image_ops.apply_orientation(self.source, work)
             notes = ["orientation applied"] if rotated else []
             if self.intermediate is not None:
-                size = image_ops.encode_webp(work, self.target, self.webp_quality)
+                if self.target.suffix.lower() == ".webp":
+                    size = image_ops.encode_webp(work, self.target, self.webp_quality)
+                    notes.append(f"webp {self.webp_quality}, {size / 1e6:.1f} MB")
+                else:
+                    size = image_ops.encode_jpeg(work, self.target)
+                    notes.append(f"jpeg q95, {size / 1e6:.1f} MB")
                 self.intermediate.unlink(missing_ok=True)
-                notes.append(f"webp {self.webp_quality}, {size / 1e6:.1f} MB")
             self.signals.finished.emit(self.index, True, "; ".join(notes))
         except Exception as error:  # noqa: BLE001 - reported to the user as text
             self.signals.finished.emit(self.index, False, str(error))

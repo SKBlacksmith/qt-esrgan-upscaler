@@ -274,19 +274,20 @@ def test_build_plan_pairs_every_source_with_a_target(tmp_path):
 # --- WebP encoding ----------------------------------------------------------
 
 
-def test_webp_needs_a_png_intermediate():
-    assert engine.needs_png_intermediate("webp") is True
-    assert engine.needs_png_intermediate("png") is False
-    assert engine.needs_png_intermediate("jpg") is False
-    assert engine.needs_png_intermediate(None) is False
+def test_jpeg_and_webp_get_a_png_intermediate(tmp_path):
+    assert engine.needs_png_intermediate(tmp_path / "a.webp") is True
+    assert engine.needs_png_intermediate(tmp_path / "a.jpg") is True
+    assert engine.needs_png_intermediate(tmp_path / "a.jpeg") is True
+    assert engine.needs_png_intermediate(tmp_path / "a.png") is False
 
 
-def test_engine_target_switches_to_png_for_webp(tmp_path):
-    target = tmp_path / "photo_x2.webp"
-    path, fmt = engine.engine_target(target, "webp")
-    assert path == tmp_path / "photo_x2.webp.engine.png"
-    assert fmt == "png"
-    assert engine.engine_target(target, "jpg") == (target, "jpg")
+def test_engine_target_switches_to_png_for_encoded_formats(tmp_path):
+    webp = tmp_path / "photo_x2.webp"
+    assert engine.engine_target(webp, "webp") == (tmp_path / "photo_x2.webp.engine.png", "png")
+    jpeg = tmp_path / "photo_x2.jpg"
+    assert engine.engine_target(jpeg, "jpg") == (tmp_path / "photo_x2.jpg.engine.png", "png")
+    png = tmp_path / "photo_x2.png"
+    assert engine.engine_target(png, "png") == (png, "png")
 
 
 def test_webp_quality_falls_back_to_lossless():

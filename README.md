@@ -27,11 +27,11 @@ formats by hand.
   source folder, result folder, output format (keep / PNG / JPEG / WebP),
   WebP encoding profile (lossless, q95, q90, q80) and tile size for GPU memory
   control.
-- **One lossy generation at most** - for WebP the upscaler is asked for a
-  lossless PNG and the result is encoded once, by this application, at the
-  quality you chose. The profile is part of the journal key, so switching from
-  lossless to a lossy profile redoes the work instead of silently keeping the
-  old files.
+- **One lossy generation at most** - for WebP and JPEG the upscaler is asked
+  for a lossless PNG and the result is encoded once, by this application: WebP
+  at the profile you chose, JPEG at quality 95 with full chroma resolution. The
+  WebP profile is part of the journal key, so switching from lossless to a
+  lossy profile redoes the work instead of silently keeping the old files.
 - **Honest scale factors** - Real-ESRGAN models are native x4. Requesting x2 on
   a photographic model runs the native x4 network and then resizes the output
   down with a Lanczos filter, which is the only correct way to get a real x2
