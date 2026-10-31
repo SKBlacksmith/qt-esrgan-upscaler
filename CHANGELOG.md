@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.4
+
+- WebP output is now encoded once, at a quality you choose: `Lossless`
+  (default), `High q95`, `Balanced q90` or `Small q80`.
+- Fixed a silent double compression: the upscaler wrote WebP with its own fixed
+  settings and the post-processing step then re-encoded the file through
+  Pillow's default, which is lossy quality 80. The tool is now asked for a
+  lossless PNG and the single WebP encode happens at the end.
+- On a 25.7-megapixel photographic scan, lossless WebP is about 30 % smaller
+  than PNG (17.0 MB against 24.5 MB) with identical pixels.
+- The misleading "WebP (lossless, compact)" format label is gone, and the
+  encoding profile is part of the journal key: changing it redoes the batch.
+
 ## 0.2.3
 
 - New models in the selector: `realesr-general-x4v3` and its denoise-tuned
